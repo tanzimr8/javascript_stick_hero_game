@@ -1,11 +1,11 @@
 // Game State
 let phase = 'waiting'; //waiting | stretching | turning | walking | transitioning | falling
-let timestamp; //The timestamp of the previous animation cycle
+let lastTimestamp; //The timestamp of the previous animation cycle
 let heroX;
-let heroYl
+let heroY;
 let sceneOffset;
 
-let platform = [];
+let platforms = [];
 let sticks = [];
 
 let score = 0;
@@ -25,8 +25,31 @@ resetGame();
 
 // Resets game state and layout
 function resetGame() {
-    
-  
+    phaase = 'waiting';
+    lastTimestamp = undefined;
+    platforms = [{
+        x:50,
+        y:50
+    }];
+    generatePlatform();
+    generatePlatform();
+    generatePlatform();
+    generatePlatform();
+    //Hero pos
+    heroX = platforms[0].x + platforms[0].w - 30; // Hero stands a bit before the edge
+    heroY = 0;
+    sceneOffset = 0;
+
+    sticks = [
+        {
+            x:platforms[0].x + platforms[0].w,
+            length:0,
+            rotation: 0
+        }
+    ];
+    score = 0;
+    restartButton.style.display = "none"; // Hide reset button
+    scoreElement.innerText = score; // Reset score display
     draw();
 }
 
