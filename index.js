@@ -12,9 +12,12 @@ let score = 0;
 
 // Config
 // Getting the canvas element
-const canvas = document.getElementById('#game');
+const canvas = document.getElementById('game');
 // Getting the drawing context
 const ctx = canvas.getContext('2d'); 
+const canvasWidth = 375;
+const canvasHeight = 375;
+const platformHeight = 100;
 
 // Further UI elements
 const scoreElement = document.getElementById("score");
@@ -25,7 +28,7 @@ resetGame();
 
 // Resets game state and layout
 function resetGame() {
-    phaase = 'waiting';
+    phase = 'waiting';
     lastTimestamp = undefined;
     platforms = [{
         x:50,
@@ -53,8 +56,63 @@ function resetGame() {
     draw();
 }
 
-function draw() {
 
+function generatePlatform() {
+    const minimumGap = 40;
+    const maximumGap = 200;
+    const minimumWidth = 20;
+    const maximumWidth = 100;
+
+    const lastPlatform = platforms[platforms.length-1];
+    let futhestX = lastPlatform.x + lastPlatform.w;
+
+    const x = futhestX + minimumGap + Math.floor(Math.random()* (maximumGap - minimumGap));
+    const w = minimumWidth + Math.floor(Math.random()*(maximumWidth - minimumWidth)); 
+    platforms.push({x:x,w:w});
+}
+
+function draw() {
+    // paints the whole canvas based on the state. 
+    // shifts the whole UI by the offset, 
+    // puts the hero in position, 
+    // paints the platforms and the sticks.
+    ctx.clearRect(0,0,canvasWidth,canvasHeight);
+    ctx.save();
+    ctx.translate(-sceneOffset,0);
+    //draw scene
+    drawPlatforms();
+    drawHero();
+    drawSticks();
+}
+function drawPlatforms(){
+    platforms.forEach(({x,w})=>{
+        ctx.fillStyle = 'black';
+        ctx.fillRect(x,canvasHeight - platformHeight, w, platformHeight);
+    });
+}
+function drawHero(){
+    const heroWidth = 20;
+    const heroHeight = 30;
+    ctx.fillStyle = 'red';
+    ctx.fillRect(
+        heroX, heroY+canvasHeight - platformHeight, heroWidth,heroHeight
+    );
+}
+function drawSticks(){
+    sticks.forEach((stick)=>{
+        ctx.save();
+        ctx.translate(stick.x, canvasHeight - platformHeight);
+        ctx.rotate((Math.PI/180) * stick.rotation);
+        // draw stick
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(0,0);
+        ctx.lineTo(0, -stick.length);
+        ctx.stroke();
+
+        ctx.restore();
+
+    });
 }
 window.addEventListener('mousedown', (event)=>{
 
