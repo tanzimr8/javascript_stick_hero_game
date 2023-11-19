@@ -115,11 +115,57 @@ function drawSticks(){
     });
 }
 window.addEventListener('mousedown', (event)=>{
-
+ if(phase === 'waiting'){
+    phase = 'streching';
+    lastTimestamp = undefined;
+    window.requestAnimationFrame(animate);
+ }
 });
 window.addEventListener('mouseup', (event)=>{
-
+    if (phase == "stretching") {
+        phase = "turning";
+      }
 });
+restartButton.addEventListener('click', (e)=>{
+    resetGame();
+    restartButton.style.display = "none";
+})
 function animate(timestamp){
+    if (!lastTimestamp){
+        lastTimestamp = timestamp;
+        window.requestAnimationFrame(animate);
+        return;
+    }
+    let timePassed = timestamp - lastTimestamp;
+    switch(phase){
+        case 'waiting':
+            return;
+        case 'streching':{
+            sticks[sticks.length-1].length += timePassed / strechingSpeed;
+            break;
+        }
+        case 'turning':{
+            sticks[sticks.length-1].length += timePassed/turninSpeed;
 
+            break;
+        }
+        case 'walking':{
+            heroX += timePassed / walkingSpeed;
+
+            break;
+        }
+        case 'transitioning':{
+            sceneOffset += timePassed /transitioningSpeed;
+            
+            break;
+        }
+        case 'falling':{
+            heroY += timePassed/fallingSpeed;
+
+            break;
+        }
+        draw();
+        lastTimestamp = timestamp;
+        window.requestAnimationFrame(animate);
+    }
 }
